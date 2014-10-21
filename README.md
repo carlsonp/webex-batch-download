@@ -20,3 +20,7 @@ Tested on Linux and Mac.
 ### Notes
 
 * Hard-coded 500 download limit per Webex user at the moment...
+
+### License
+
+* GPLv3 (see `license.txt`)
