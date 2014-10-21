@@ -1,0 +1,5 @@
+*.txt~
+*.pyc
+
+#Webex video files
+*.arf
