@@ -7,7 +7,7 @@ Batch download [Cisco Webex](http://www.webex.com/) sessions.  Developed for [IS
 
 * Install [pip](https://pypi.python.org/pypi/pip) for Python.
    * `sudo easy_install pip`
-* Install [Python Selenium](http://selenium-python.readthedocs.org/) bindings.
+* Install [Python Selenium](http://www.seleniumhq.org/) bindings ([unofficial documentation](http://selenium-python.readthedocs.org/)).
    * `sudo pip install -U selenium`
 
 
