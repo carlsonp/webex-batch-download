@@ -143,3 +143,14 @@ def downloadRecording(WebExID, password):
 			skipped += 1
 
 	return downloaded, skipped
+
+def folderEmpty(folder):
+	#determines if the folder is empty or not
+	if len(os.listdir(folder)) > 0:
+		#this check is needed because Mac defaults to having a .DS_Store hidden file in the folder
+		empty = True
+		for item in os.listdir(folder):
+			if not item.startswith(".") or not os.path.isfile(os.path.join(folder, item)):
+				empty = False
+	else:
+		return True

@@ -10,9 +10,9 @@ if not os.path.exists(settings.DOWNLOAD_FOLDER):
 	os.makedirs(settings.DOWNLOAD_FOLDER)
 
 #check to make sure download folder is empty
-if len(os.listdir(settings.DOWNLOAD_FOLDER)) > 0:
+if not util.folderEmpty(settings.DOWNLOAD_FOLDER):
 	print "Error: The download folder is not empty: ", settings.DOWNLOAD_FOLDER
-	sys.exit(0)
+	sys.exit(1)
 
 print "******************************************"
 print "Don't close the Firefox window that opens."
