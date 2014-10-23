@@ -1,4 +1,4 @@
-import urllib2, os, sys
+import urllib2, os, sys, math
 from time import sleep
 from xml.dom import minidom
 from datetime import datetime, timedelta
@@ -137,6 +137,15 @@ def downloadRecording(WebExID, password):
 			#.quit() closes browser window and safely ends session
 			#.close() close browser window
 			driver.quit() #quit Firefox and close down profile
+			
+			#check reported file size from XML against our download
+			xml_size = float(node.getElementsByTagName("ep:size")[0].firstChild.nodeValue)
+			filename = node.getElementsByTagName("ep:name")[0].firstChild.nodeValue
+			downloaded_size = getFileSizeMB(os.path.join(settings.DOWNLOAD_FOLDER, WebExID, filename+".arf"))
+			#run a small check, as long as we're within 5 MB of the file size we're good
+			if abs(downloaded_size - xml_size) > 5:
+				print "Error: Downloaded file size for: ", filename, " does not match the reported value."
+				sys.exit(1)
 
 			downloaded += 1
 		else:
@@ -154,3 +163,6 @@ def folderEmpty(folder):
 				empty = False
 	else:
 		return True
+
+def getFileSizeMB(file):
+	return float(os.path.getsize(file) / 1024) / 1024
