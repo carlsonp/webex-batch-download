@@ -11,7 +11,7 @@ Tested on Linux and Mac.
 * Install [Python Selenium](http://www.seleniumhq.org/) bindings ([unofficial documentation](http://selenium-python.readthedocs.org/)).
    * `sudo pip install -U selenium`
 * Edit the `settings.py` file and enter the appropriate information.
-* Open a terminal and start the download.
+* Open a terminal, `cd` (change directory) to the appropriate location, and start the download.
    * `python batch-download.py`
    * *Don't close the Firefox windows that open!*
 * Navigate to the download folder.  Your files are sorted based on the WebExID.
