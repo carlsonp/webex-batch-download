@@ -120,7 +120,7 @@ def downloadRecording(WebExID, password):
 
 			#wait until the browser has processed all the javascript and loading stuff
 			#TODO: hopefully the download has started, this is really hacky... is there a better way?
-			sleep(25) #25 seconds
+			sleep(45) #45 seconds
 
 			download_done = False
 			while(not download_done):
