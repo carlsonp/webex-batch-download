@@ -21,15 +21,18 @@ print "******************************************"
 counter = 0
 total_dl = 0
 total_skipped = 0
+total_deleted = 0
 for WebExID in settings.WEBEX_IDS:
 	print "Percent done: %.2f %%" % float(float(counter)/float(len(settings.WEBEX_IDS)) * 100)
 	userid = util.getUserID(WebExID, settings.PASSWORD)
 	print "Starting download for: ", WebExID
-	downloaded, skipped = util.downloadRecording(WebExID, settings.PASSWORD)
+	downloaded, skipped, deleted = util.downloadRecording(WebExID, settings.PASSWORD)
 	print "Downloaded: ", downloaded
 	print "Skipped: ", skipped
+	print "Deleted: ", deleted
 	total_dl += downloaded
 	total_skipped += skipped
+	total_deleted += deleted
 	counter += 1
 
 print "Finished batch downloading."
@@ -37,4 +40,5 @@ print "Finished batch downloading."
 print "Total stats breakdown:"
 print "Total Downloads: ", total_dl
 print "Total Skipped: ", total_skipped
+print "Total Deleted: ", total_deleted
 print "Downloaded files are here: ", settings.DOWNLOAD_FOLDER

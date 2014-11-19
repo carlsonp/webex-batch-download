@@ -59,7 +59,7 @@ def downloadRecording(WebExID, password):
 	reqXML += "<bodyContent xsi:type=\"java:com.webex.service.binding.ep.LstRecording\">";
 	reqXML += "<listControl>";
 	reqXML += "<startFrom>0</startFrom>";
-	reqXML += "<maximumNum>500</maximumNum>";
+	reqXML += "<maximumNum>500</maximumNum>"; #TODO: this is currently hardcoded, could be an issue later
 	reqXML += "</listControl>";
 	reqXML += "<returnSessionDetails>true</returnSessionDetails>";
 	reqXML += "<serviceTypes>";
@@ -85,6 +85,7 @@ def downloadRecording(WebExID, password):
 	#keep some stats to return
 	downloaded = 0
 	skipped = 0
+	deleted = 0
 
 	for node in collection.getElementsByTagName("ep:recording"):
 		#convert creation time to Python datetime object type
@@ -147,11 +148,16 @@ def downloadRecording(WebExID, password):
 				print "Error: Downloaded file size for: ", filename, " does not match the reported value."
 				sys.exit(1)
 
+			if settings.DELETE_SESSIONS or settings.DELETE_SESSIONS.lower() == "true":
+				#delete the session off the WebEx server
+				deleteRecording(WebExID, password, node.getElementsByTagName("ep:recordingID")[0].firstChild.nodeValue)
+				deleted += 1
+
 			downloaded += 1
 		else:
 			skipped += 1
 
-	return downloaded, skipped
+	return downloaded, skipped, deleted
 
 def folderEmpty(folder):
 	#determines if the folder is empty or not
@@ -162,7 +168,45 @@ def folderEmpty(folder):
 			if not item.startswith(".") or not os.path.isfile(os.path.join(folder, item)):
 				empty = False
 	else:
-		return True
+		empty = True
+
+	return empty
 
 def getFileSizeMB(file):
 	return float(os.path.getsize(file) / 1024) / 1024
+
+def deleteRecording(WebExID, password, recordingID):
+	#https://developer.cisco.com/media/webex-xml-api/43DelRecording.html
+	reqXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
+	reqXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+	reqXML += "<header>\r\n";
+	reqXML += "<securityContext>\r\n";
+	reqXML += "<webExID>" + WebExID + "</webExID>\r\n";
+	reqXML += "<password>" + password + "</password>\r\n";
+	reqXML += "<siteID>" + settings.SITEID + "</siteID>\r\n";
+	reqXML += "</securityContext>\r\n";
+	reqXML += "</header>\r\n";
+	reqXML += "<body>\r\n";
+	reqXML += "<bodyContent xsi:type=\"java:com.webex.service.binding.ep.DelRecording\">";
+	reqXML += "<recordingID>" + recordingID + "</recordingID>";
+	reqXML += "<isServiceRecording>true</isServiceRecording>\r\n"; #this is very important and not in the documentation example
+	reqXML += "</bodyContent>\r\n";
+	reqXML += "</body>\r\n";
+	reqXML += "</serv:message>\r\n";
+
+	req = urllib2.Request(settings.XML_SERVER_URL, reqXML)
+
+	try:
+		response = urllib2.urlopen(req)
+		xmldoc = minidom.parseString(response.read())
+		collection = xmldoc.documentElement
+
+		if collection.getElementsByTagName("serv:result")[0].firstChild.nodeValue != "SUCCESS":
+			print "ERROR: Error deleting: ", recordingID, ", the server did not send SUCCESS back."
+			sys.exit(1)
+	except urllib2.URLError, e:
+		print "URL connection error: ", e.reason, ": are you connected to the Internet?"
+		sys.exit(1)
+	except Exception:
+		print "Generic error in urlopen()."
+		sys.exit(1)
