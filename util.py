@@ -148,7 +148,7 @@ def downloadRecording(WebExID, password):
 				print "Error: Downloaded file size for: ", filename, " does not match the reported value."
 				sys.exit(1)
 
-			if settings.DELETE_SESSIONS or settings.DELETE_SESSIONS.lower() == "true":
+			if settings.DELETE_SESSIONS or settings.DELETE_SESSIONS in ["true", "True"]:
 				#delete the session off the WebEx server
 				deleteRecording(WebExID, password, node.getElementsByTagName("ep:recordingID")[0].firstChild.nodeValue)
 				deleted += 1
